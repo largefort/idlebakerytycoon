@@ -243,6 +243,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-bottom: 5px;
 }
 
 .market-items {
@@ -251,6 +252,8 @@ body {
     border-radius: 5px;
     padding: 10px;
     margin-top: 5px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .market-items.show {
@@ -446,6 +449,11 @@ input[type="color"] {
             <div class="ingredient" draggable="true" data-type="flour">&#x1f33e;</div>
             <div class="ingredient" draggable="true" data-type="sugar">&#x1f9c2;</div>
             <div class="ingredient" draggable="true" data-type="eggs">&#x1f95a;</div>
+            <div class="ingredient" draggable="true" data-type="butter">&#x1f9c8;</div>
+            <div class="ingredient" draggable="true" data-type="milk">&#x1f95b;</div>
+            <div class="ingredient" draggable="true" data-type="chocolate">&#x1f36b;</div>
+            <div class="ingredient" draggable="true" data-type="vanilla">&#x1f9c8;</div>
+            <div class="ingredient" draggable="true" data-type="yeast">&#x1f9eb;</div>
         </div>
         
         <div class="workers-panel">
@@ -506,9 +514,24 @@ input[type="color"] {
     flour: 5,
     sugar: 5,
     eggs: 5,
+    butter: 3,
+    milk: 3,
+    chocolate: 3,
+    vanilla: 3,
+    yeast: 3,
     water: 0,
-    butter: 0,
-    milk: 0
+    salt: 0,
+    nuts: 0,
+    cinnamon: 0,
+    berries: 0,
+    honey: 0,
+    cheese: 0,
+    coconut: 0,
+    carrots: 0,
+    strawberry: 0,
+    banana: 0,
+    blueberry: 0,
+    raspberry: 0
   },
   startTime: new Date(),
   doughMade: 0,
@@ -567,6 +590,65 @@ const RECIPES = {
       milk: 1
     },
     emoji: "🎂"
+  },
+  croissant: {
+    name: "Croissant",
+    level: 5,
+    ingredients: {
+      flour: 2,
+      butter: 3,
+      milk: 1,
+      yeast: 1
+    },
+    emoji: "🥐"
+  },
+  donut: {
+    name: "Donut",
+    level: 6,
+    ingredients: {
+      flour: 2,
+      sugar: 2,
+      milk: 1,
+      yeast: 1,
+      vanilla: 1
+    },
+    emoji: "🍩"
+  },
+  chocolateCake: {
+    name: "Chocolate Cake",
+    level: 7,
+    ingredients: {
+      flour: 2,
+      sugar: 3,
+      eggs: 2,
+      milk: 1,
+      chocolate: 2
+    },
+    emoji: "🎂"
+  },
+  pretzel: {
+    name: "Pretzel",
+    level: 8,
+    ingredients: {
+      flour: 2,
+      yeast: 1,
+      salt: 2,
+      butter: 1
+    },
+    emoji: "🥨"
+  },
+  muffin: {
+    name: "Muffin",
+    level: 9,
+    ingredients: {
+      flour: 2,
+      sugar: 2,
+      eggs: 1,
+      milk: 1,
+      vanilla: 1,
+      chocolate: 1
+    },
+    emoji: "🧁"
   }
 };
 const INGREDIENTS = {
@@ -605,15 +687,120 @@ const INGREDIENTS = {
     price: 30,
     emoji: "🥛",
     level: 3
+  },
+  yeast: {
+    name: "Yeast",
+    price: 12,
+    emoji: "🧫",
+    level: 4
+  },
+  vanilla: {
+    name: "Vanilla",
+    price: 35,
+    emoji: "🧪",
+    level: 5
+  },
+  chocolate: {
+    name: "Chocolate",
+    price: 40,
+    emoji: "🍫",
+    level: 6
+  },
+  salt: {
+    name: "Salt",
+    price: 8,
+    emoji: "🧂",
+    level: 7
+  },
+  nuts: {
+    name: "Nuts",
+    price: 45,
+    emoji: "🥜",
+    level: 8
+  },
+  cinnamon: {
+    name: "Cinnamon",
+    price: 15,
+    emoji: "🌶️",
+    level: 9
+  },
+  berries: {
+    name: "Berries",
+    price: 50,
+    emoji: "🫐",
+    level: 10
+  },
+  honey: {
+    name: "Honey",
+    price: 55,
+    emoji: "🍯",
+    level: 11
+  },
+  cheese: {
+    name: "Cheese",
+    price: 60,
+    emoji: "🧀",
+    level: 12
+  },
+  coconut: {
+    name: "Coconut",
+    price: 45,
+    emoji: "🥥",
+    level: 13
+  },
+  carrots: {
+    name: "Carrots",
+    price: 25,
+    emoji: "🥕",
+    level: 14
+  },
+  strawberry: {
+    name: "Strawberry",
+    price: 30,
+    emoji: "🍓",
+    level: 15
+  },
+  banana: {
+    name: "Banana",
+    price: 35,
+    emoji: "🍌",
+    level: 16
+  },
+  blueberry: {
+    name: "Blueberry",
+    price: 40,
+    emoji: "🫐",
+    level: 17
+  },
+  raspberry: {
+    name: "Raspberry",
+    price: 45,
+    emoji: "🫨",
+    level: 18
   }
 };
 const INGREDIENT_VALUES = {
   flour: 1,
   sugar: 2,
-  eggs: 0.1,
+  eggs: 1,
   water: 0,
-  butter: 0,
-  milk: 0
+  butter: 2,
+  milk: 2,
+  yeast: 1,
+  vanilla: 3,
+  chocolate: 4,
+  salt: 1,
+  nuts: 3,
+  cinnamon: 2,
+  berries: 4,
+  honey: 5,
+  cheese: 5,
+  coconut: 3,
+  carrots: 3,
+  strawberry: 4,
+  banana: 4,
+  blueberry: 5,
+  raspberry: 5
 };
 document.addEventListener('DOMContentLoaded', () => {
   showCreateBakerModal();
@@ -851,7 +1038,7 @@ function completeBaking(ingredients = {
   for (const [ingredient, amount] of Object.entries(ingredients)) {
     value += INGREDIENT_VALUES[ingredient] * amount;
   }
-  gameState.money += value;
+  gameState.money += Math.round(value * 100) / 100;
   gameState.exp += 10;
   if (gameState.exp >= 100) {
     gameState.level++;
@@ -871,6 +1058,9 @@ function initializeGame() {
 function setupMarket() {
   const marketButton = document.querySelector('.market-button');
   const marketItems = document.querySelector('.market-items');
+  marketButton.addEventListener('click', () => {
+    marketItems.classList.toggle('show');
+  });
   marketItems.innerHTML = '';
   for (const [itemId, item] of Object.entries(INGREDIENTS)) {
     if (gameState.level >= item.level) {
@@ -888,14 +1078,11 @@ function setupMarket() {
       itemEl.className = 'market-item locked';
       itemEl.innerHTML = `
         <span>${item.name} ${item.emoji} (Unlocks at Level ${item.level})</span>
-        <button class="buy-item">Buy $${item.price}</button>
+        <button class="buy-item" disabled>Buy $${item.price}</button>
       `;
       marketItems.appendChild(itemEl);
     }
   }
-  marketButton.addEventListener('click', () => {
-    marketItems.classList.toggle('show');
-  });
   document.querySelectorAll('.buy-item').forEach(button => {
     button.addEventListener('click', e => {
       const item = e.target.closest('.market-item');
@@ -916,15 +1103,17 @@ function startPlaytimeCounter() {
 }
 function updatePlaytimeDisplay() {
   const currentTime = new Date();
-  const playTime = Math.floor((currentTime - gameState.startTime) / 1000);
+  const timeDiff = new Date(currentTime - new Date(gameState.startTime));
+  const minutes = Math.floor(timeDiff / 1000 / 60);
+  const seconds = Math.floor(timeDiff / 1000 % 60);
   document.querySelector('.stats-panel').innerHTML = `
-            <h3>Baker Stats</h3>
-            <p>Level: <span id="level">${gameState.level}</span></p>
-            <p>Money: &#x24;<span id="money">${gameState.money}</span></p>
-            <p>Experience: <span id="exp">${gameState.exp}</span>/100</p>
-            <p>Playtime: ${Math.floor(playTime / 60)}m ${playTime % 60}s</p>
-            <p>Dough Made: ${gameState.doughMade}</p>
-            `;
+    <h3>Baker Stats</h3>
+    <p>Level: <span id="level">${gameState.level}</span></p>
+    <p>Money: $<span id="money">${gameState.money.toFixed(2)}</span></p>
+    <p>Experience: <span id="exp">${gameState.exp}</span>/100</p>
+    <p>Playtime: ${minutes}m ${seconds}s</p>
+    <p>Dough Made: ${gameState.doughMade}</p>
+  `;
 }
 function updateInventoryDisplay() {
   const inventory = document.querySelector('.inventory');
@@ -946,8 +1135,25 @@ function getItemEmoji(item) {
     flour: '🌾',
     sugar: '🧂',
     eggs: '🥚',
+    butter: '🧈',
+    milk: '🥛',
+    chocolate: '🍫',
+    vanilla: '🧪',
+    yeast: '🧫',
     water: '💧',
-    dough: '🥟'
+    dough: '🥟',
+    salt: '🧂',
+    nuts: '🥜',
+    cinnamon: '🌶️',
+    berries: '🫐',
+    honey: '🍯',
+    cheese: '🧀',
+    coconut: '🥥',
+    carrots: '🥕',
+    strawberry: '🍓',
+    banana: '🍌',
+    blueberry: '🫐',
+    raspberry: '🫨'
   };
   return emojis[item];
 }
@@ -972,7 +1178,8 @@ function setupWorkerSystem() {
 function hireNewWorker() {
   const worker = {
     id: gameState.workers.length + 1,
-    productivity: Math.floor(Math.random() * 50) + 50
+    productivity: Math.floor(Math.random() * 50) + 50,
+    lastWorked: new Date()
   };
   gameState.workers.push(worker);
   const workerCard = document.createElement('div');
@@ -980,9 +1187,26 @@ function hireNewWorker() {
   workerCard.textContent = `Worker #${worker.id} - Productivity: ${worker.productivity}%`;
   document.getElementById('workersList').appendChild(workerCard);
   setInterval(() => {
-    gameState.money += worker.productivity / 100;
-    updateStats();
-  }, 5000);
+    const now = new Date();
+    if (now - worker.lastWorked >= 5000) {
+      if (gameState.inventory.flour >= 1 && gameState.inventory.water >= 1) {
+        gameState.inventory.flour--;
+        gameState.inventory.water--;
+        batchBaking.doughCount++;
+        worker.lastWorked = now;
+        if (!batchBaking.inProgress) {
+          batchBaking.inProgress = true;
+          startBaking(batchBaking.doughCount, {
+            flour: 1,
+            water: 1
+          });
+          batchBaking.doughCount = 0;
+        }
+        updateInventoryDisplay();
+        updateStats();
+      }
+    }
+  }, 1000);
 }
 function saveGame() {
   const saveData = {
@@ -995,7 +1219,10 @@ function loadGame() {
   const savedData = localStorage.getItem('bakerySaveData');
   if (savedData) {
     const data = JSON.parse(savedData);
-    gameState = data.gameState;
+    gameState = {
+      ...data.gameState,
+      startTime: new Date(data.gameState.startTime)
+    };
     batchBaking = data.batchBaking;
     updateStats();
     updateInventoryDisplay();
@@ -1006,6 +1233,27 @@ function loadGame() {
       workerCard.classList.add('worker-card');
       workerCard.textContent = `Worker #${worker.id} - Productivity: ${worker.productivity}%`;
       workersList.appendChild(workerCard);
+      setInterval(() => {
+        const now = new Date();
+        if (now - new Date(worker.lastWorked) >= 5000) {
+          if (gameState.inventory.flour >= 1 && gameState.inventory.water >= 1) {
+            gameState.inventory.flour--;
+            gameState.inventory.water--;
+            batchBaking.doughCount++;
+            worker.lastWorked = now;
+            if (!batchBaking.inProgress) {
+              batchBaking.inProgress = true;
+              startBaking(batchBaking.doughCount, {
+                flour: 1,
+                water: 1
+              });
+              batchBaking.doughCount = 0;
+            }
+            updateInventoryDisplay();
+            updateStats();
+          }
+        }
+      }, 1000);
     });
   }
 }</script>
