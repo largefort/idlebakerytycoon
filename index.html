@@ -231,36 +231,17 @@ body {
     margin-top: 20px;
 }
 
-.market-dropdown {
+.market-section {
     margin-top: 20px;
-    position: relative; /* Container for dropdown */
-}
-
-.market-button {
-    width: 100%;
-    padding: 10px;
-    background: var(--accent-color);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 5px;
+    padding: 15px;
+    background: var(--primary-color);
+    border-radius: 10px;
 }
 
 .market-items {
-    display: none;
-    background: white;
-    border-radius: 5px;
-    padding: 10px;
-    margin-top: 5px;
-    max-height: 300px;
+    max-height: 200px;
     overflow-y: auto;
-    position: absolute; /* Add positioning */
-    width: 90%;
-    z-index: 100;
-}
-
-.market-items.show {
-    display: block !important; /* Force display when shown */
+    margin-top: 10px;
 }
 
 .market-item {
@@ -488,25 +469,10 @@ input[type="color"] {
             <button id="hireWorker">Hire Worker (&#x24;100)</button>
         </div>
         
-        <div class="market-dropdown">
-            <button class="market-button">Baker&apos;s Market</button>
+        <div class="market-section">
+            <h3>Baker&apos;s Market</h3>
             <div class="market-items">
-                <div class="market-item" data-item="flour" data-price="10">
-                    <span>Flour &#x1f33e;</span>
-                    <button class="buy-item">Buy &#x24;10</button>
-                </div>
-                <div class="market-item" data-item="sugar" data-price="15">
-                    <span>Sugar &#x1f9c2;</span>
-                    <button class="buy-item">Buy &#x24;15</button>
-                </div>
-                <div class="market-item" data-item="eggs" data-price="20">
-                    <span>Eggs &#x1f95a;</span>
-                    <button class="buy-item">Buy &#x24;20</button>
-                </div>
-                <div class="market-item" data-item="water" data-price="5">
-                    <span>Water &#x1f4a7;</span>
-                    <button class="buy-item">Buy &#x24;5</button>
-                </div>
+                <!-- Market items will be populated by JS -->
             </div>
         </div>
     </div>
@@ -1097,13 +1063,7 @@ function initializeGame() {
   setInterval(saveGame, 60000);
 }
 function setupMarket() {
-  const marketButton = document.querySelector('.market-button');
   const marketItems = document.querySelector('.market-items');
-  marketButton.removeEventListener('click', toggleMarket);
-  function toggleMarket() {
-    marketItems.classList.toggle('show');
-  }
-  marketButton.addEventListener('click', toggleMarket);
   marketItems.innerHTML = '';
   for (const [itemId, item] of Object.entries(INGREDIENTS)) {
     if (gameState.level >= item.level) {
