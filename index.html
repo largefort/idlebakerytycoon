@@ -1,501 +1,761 @@
-<html><head><base href "."; <script src="https://cdnjs.cloudflare.com/ajax/libs/draggable/1.0.0-beta.12/draggable.bundle.js">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<html><head><base href}.{% endhighlight %}<head></head><body>
 <style>
-:root {
-    --primary-color: #FFB6C1;  /* Light pink */
-    --secondary-color: #FFDAB9; /* Peach */
-    --accent-color: #DEB887;    /* Burlywood */
-}
+    /* Original styles */
+    :root {
+      --primary-color: #FFB6C1;  /* Light pink */
+      --secondary-color: #FFDAB9; /* Peach */
+      --accent-color: #DEB887;    /* Burlywood */
+    }
 
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Comic Sans MS', cursive;
-    background: #FFF5EE;
-}
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive;
+      background: #FFF5EE;
+      overflow: hidden;
+    }
 
-.game-container {
-    display: flex;
-    height: 100vh;
-}
+    .game-container {
+      display: flex;
+      height: 100vh;
+    }
 
-.sidebar {
-    width: 300px;
-    background: var(--secondary-color);
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-}
+    .sidebar {
+      width: 300px;
+      background: var(--secondary-color);
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
 
-.baker-frame {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto;
-    position: relative;
-}
+    .baker-frame {
+      width: 80px;
+      height: 80px;
+      margin: 0;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+    }
 
-.baker-frame img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2; /* Change to 2 to be above avatar */
-}
+    .baker-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+    }
 
-.baker-avatar {
-    width: 180px;
-    height: 180px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9); /* Add scale to fit better */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-    background: transparent; /* Remove white background */
-    border-radius: 50%;
-}
+    .baker-avatar {
+      width: 70px;
+      height: 70px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 11;
+      background: transparent;
+      border-radius: 50%;
+    }
 
-.baker-avatar svg {
-    width: 100%;
-    height: 100%;
-    transform: translateY(-5px) scale(0.8); /* Adjust position slightly up and scale down */
-}
+    .baker-avatar svg {
+      width: 100%;
+      height: 100%;
+      transform: translateY(-5px) scale(0.8);
+    }
 
-.game-area {
-    flex-grow: 1;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
+    .game-area {
+      flex-grow: 1;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
 
-.kitchen-station {
-    background: var(--primary-color);
-    border-radius: 10px;
-    padding: 15px;
-    min-height: 200px;
-}
+    .kitchen-station {
+      background: var(--primary-color);
+      border-radius: 10px;
+      padding: 15px;
+      min-height: 200px;
+    }
 
-.ingredient {
-    width: 60px;
-    height: 60px;
-    background: #fff;
-    border-radius: 8px;
-    margin: 5px;
-    cursor: grab;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+    .ingredient {
+      width: 60px;
+      height: 60px;
+      background: #fff;
+      border-radius: 8px;
+      margin: 5px;
+      cursor: grab;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
 
-.modal-content {
-    background: var(--secondary-color);
-    padding: 30px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 800px;
-    text-align: center;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    align-items: start;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
+    .modal-content {
+      background: var(--secondary-color);
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 800px;
+      text-align: center;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
 
-.baker-preview {
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin: 0;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 2/3;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
+    .baker-preview {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 0;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 2/3;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
 
-.customization-panel {
-    background: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    height: 100%;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
+    .customization-panel {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      height: auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
 
-.hair-options, .outfit-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
+    .hair-options, .outfit-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
 
-.hair-options button, .outfit-options button {
-    padding: 8px;
-    border: 2px solid var(--accent-color);
-    border-radius: 6px;
-    background: white;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s;
-}
+    .hair-options button, .outfit-options button {
+      padding: 8px;
+      border: 2px solid var(--accent-color);
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
 
-#createBaker {
-    grid-column: span 2;
-    padding: 12px 24px;
-    background: var(--accent-color);
-    border: none;
-    border-radius: 8px;
-    font-size: 18px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: all 0.2s;
-    color: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+    #createBaker {
+      grid-column: span 2;
+      padding: 12px 24px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.2s;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-#createBaker:hover {
-    background: #8B4513;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
+    #createBaker:hover {
+      background: #8B4513;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
 
-.modal h2 {
-    grid-column: span 2;
-    color: #8B4513;
-    margin: 0 0 20px 0;
-    font-size: 24px;
-}
+    .modal h2 {
+      grid-column: span 2;
+      color: #8B4513;
+      margin: 0 0 20px 0;
+      font-size: 24px;
+    }
 
-.customization-panel h3 {
-    color: #8B4513;
-    margin: 0;
-    font-size: 16px;
-}
+    .customization-panel h3 {
+      color: #8B4513;
+      margin: 0;
+      font-size: 16px;
+    }
 
-.stats-panel {
-    background: var(--accent-color);
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 20px;
-    max-height: 200px;
-    overflow-y: auto;
-}
+    .stats-panel {
+      background: var(--accent-color);
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
 
-.workers-panel {
-    margin-top: 20px;
-}
+    .workers-panel {
+      margin-top: 20px;
+    }
 
-.worker-card {
-    background: #fff;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 8px;
-}
+    .worker-card {
+      background: #fff;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+    }
 
-.connecting-line {
-    position: absolute;
-    pointer-events: none;
-    stroke: #000;
-    stroke-width: 2;
-}
+    .connecting-line {
+      position: absolute;
+      pointer-events: none;
+      stroke: #000;
+      stroke-width: 2;
+    }
 
-.oven {
-    background: #8B4513;
-    border-radius: 15px;
-    padding: 20px;
-    color: white;
-}
+    .oven {
+      background: #8B4513;
+      border-radius: 15px;
+      padding: 20px;
+      color: white;
+    }
 
-.inventory {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 20px;
-}
+    .inventory {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
 
-.market-section {
-    margin-top: 20px;
-    padding: 15px;
-    background: var(--primary-color);
-    border-radius: 10px;
-}
+    .market-section {
+      margin-top: 20px;
+      padding: 15px;
+      background: var(--primary-color);
+      border-radius: 10px;
+    }
 
-.market-items {
-    max-height: 200px;
-    overflow-y: auto;
-    margin-top: 10px;
-}
+    .market-items {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
 
-.market-item {
-    padding: 8px;
-    margin: 8px 0;
-    border: 1px solid var(--accent-color);
-    border-radius: 8px;
-    background: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s;
-}
+    .market-item {
+      padding: 8px;
+      margin: 8px 0;
+      border: 1px solid var(--accent-color);
+      border-radius: 8px;
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
 
-.market-item:hover {
-    background: var(--secondary-color);
-}
+    .market-item:hover {
+      background: var(--secondary-color);
+    }
 
-.market-item.locked {
-    opacity: 0.5;
-    background: #eee;
-    cursor: not-allowed;
-}
+    .market-item.locked {
+      opacity: 0.5;
+      background: #eee;
+      cursor: not-allowed;
+    }
 
-.market-item.locked button {
-    pointer-events: none;
-}
+    .market-item.locked button {
+      pointer-events: none;
+    }
 
-.humanoid-avatar {
-    font-size: 24px;
-    background: #fff;
-    padding: 10px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+    .humanoid-avatar {
+      font-size: 24px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.baker-preview {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    margin: 20px auto;
-    width: 200px;
-    height: 300px;
-}
+    .baker-preview {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px auto;
+      width: 200px;
+      height: 300px;
+    }
 
-.customization-panel {
-    display: grid;
-    gap: 15px;
-    padding: 20px;
-}
+    .customization-panel {
+      display: grid;
+      gap: 15px;
+      padding: 20px;
+    }
 
-.hair-options, .outfit-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
+    .hair-options, .outfit-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
 
-.hair-options button, .outfit-options button {
-    padding: 10px;
-    border: 2px solid var(--accent-color);
-    border-radius: 8px;
-    background: white;
-    cursor: pointer;
-}
+    .hair-options button, .outfit-options button {
+      padding: 10px;
+      border: 2px solid var(--accent-color);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+    }
 
-.hair-options button.selected, .outfit-options button.selected {
-    background: var(--accent-color);
-    color: white;
-}
+    .hair-options button.selected, .outfit-options button.selected {
+      background: var(--accent-color);
+      color: white;
+    }
 
-input[type="range"] {
-    width: 100%;
-}
+    input[type="range"] {
+      width: 100%;
+    }
 
-input[type="color"] {
-    width: 50px;
-    height: 50px;
-    padding: 0;
-    border: none;
-}
+    input[type="color"] {
+      width: 50px;
+      height: 50px;
+      padding: 0;
+      border: none;
+    }
 
-.oven button {
-  background: var(--accent-color);
-  border: none;
-  border-radius: 5px;
-  padding: 8px 16px;
-  color: white;
-  cursor: pointer;
-  margin-top: 10px;
-}
+    .oven button {
+      background: var(--accent-color);
+      border: none;
+      border-radius: 5px;
+      padding: 8px 16px;
+      color: white;
+      cursor: pointer;
+      margin-top: 10px;
+    }
 
-.oven button:hover {
-  background: #8B4513;
-}
+    .oven button:hover {
+      background: #8B4513;
+    }
 
-#hireWorker {
-    width: 100%;
-    padding: 12px;
-    background: var(--accent-color);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px;
-    transition: all 0.2s;
-}
+    #hireWorker {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
 
-#hireWorker:hover {
-    background: #8B4513;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
+    #hireWorker:hover {
+      background: #8B4513;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
 
-#hireWorker:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
+    #hireWorker:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
 
-.reset-button {
-    width: 100%;
-    padding: 10px;
-    background: #ff4444;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 15px;
-    font-size: 16px;
-    transition: all 0.2s;
-}
+    .reset-button {
+      width: 100%;
+      padding: 10px;
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 15px;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
 
-.reset-button:hover {
-    background: #cc0000;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-</style>
-</head>
-<body>
-<div id="createBakerModal" class="modal">
-    <div class="modal-content">
-        <h2>Create Your Baker</h2>
-        
-        <div class="baker-preview">
-            <svg id="bakerPreview" width="100%" height="100%" viewBox="0 0 200 300">
-                <g id="body">
-                    <path id="torso" d="M80 100 h40 v100 h-40 z" fill="#ddd"/>
-                    <circle id="head" cx="100" cy="70" r="30" fill="#ddd"/>
-                    <path id="leftArm" d="M80 110 l-30 40" stroke="#ddd" stroke-width="20" stroke-linecap="round"/>
-                    <path id="rightArm" d="M120 110 l30 40" stroke="#ddd" stroke-width="20" stroke-linecap="round"/>
-                    <path id="leftLeg" d="M85 200 l-15 60" stroke="#ddd" stroke-width="20" stroke-linecap="round"/>
-                    <path id="rightLeg" d="M115 200 l15 60" stroke="#ddd" stroke-width="20" stroke-linecap="round"/>
-                </g>
-                <g id="hair"/>
-                <g id="outfit"/>
-            </svg>
-        </div>
-        
-        <div class="customization-panel">
-            <h3>Skin Tone</h3>
-            <input type="range" id="skinTone" min="1" max="10" value="5">
-            
-            <h3>Hair Style</h3>
-            <div class="hair-options">
-                <button data-hair="short">Short</button>
-                <button data-hair="long">Long</button>
-                <button data-hair="curly">Curly</button>
-            </div>
+    .reset-button:hover {
+      background: #cc0000;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
 
-            <h3>Hair Color</h3> 
-            <input type="color" id="hairColor" value="#000000">
+    /* Mobile-specific styles */
+    :root {
+      --nav-height: 60px;
+      --header-height: 80px;
+    }
 
-            <h3>Outfit</h3>
-            <div class="outfit-options">
-                <button data-outfit="chef">Chef Uniform</button>
-                <button data-outfit="casual">Casual</button>
-                <button data-outfit="fancy">Fancy</button>
-            </div>
-        </div>
+    .nav-tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--nav-height);
+      background: white;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
 
-        <button id="createBaker">Start Baking!</button>
-    </div>
-</div>
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      color: #666;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
 
-<div class="game-container">
-    <div class="sidebar">
-        <button id="resetProgress" class="reset-button">Reset Progress</button>
-        
-        <div class="baker-frame">
-            <img src="DALL_E_2024-12-31_00.40.43_-_A_photorealistic_empty_circular_golden_frame_designed_for_a_bakery-themed_game._The_frame_should_be_ornate_and_elegant__with_subtle_flourishes_such_as-removebg-preview.png" alt="Baker Frame">
-            <div class="baker-avatar" id="bakerAvatar">
-                <!-- Baker avatar will be generated here -->
-            </div>
-        </div>
-        
-        <div class="stats-panel">
-            <h3>Baker Stats</h3>
-            <p>Level: <span id="level">1</span></p>
-            <p>Money: &#x24;<span id="money">0</span></p>
-            <p>Experience: <span id="exp">0</span>/100</p>
-        </div>
-        
-        <div class="inventory">
-            <h3>Baker&apos;s Storage</h3>
-            <div class="ingredient" draggable="true" data-type="flour">&#x1f33e;</div>
-            <div class="ingredient" draggable="true" data-type="sugar">&#x1f9c2;</div>
-            <div class="ingredient" draggable="true" data-type="eggs">&#x1f95a;</div>
-            <div class="ingredient" draggable="true" data-type="butter">&#x1f9c8;</div>
-            <div class="ingredient" draggable="true" data-type="milk">&#x1f95b;</div>
-            <div class="ingredient" draggable="true" data-type="chocolate">&#x1f36b;</div>
-            <div class="ingredient" draggable="true" data-type="vanilla">&#x1f9c8;</div>
-            <div class="ingredient" draggable="true" data-type="yeast">&#x1f9eb;</div>
-        </div>
-        
-        <div class="workers-panel">
-            <h3>Workers</h3>
-            <div id="workersList">
-                <!-- Workers will be listed here -->
-            </div>
-            <button id="hireWorker">Hire Worker (&#x24;100)</button>
-        </div>
-        
-        <div class="market-section">
-            <h3>Baker&apos;s Market</h3>
-            <div class="market-items">
-                <!-- Market items will be populated by JS -->
-            </div>
-        </div>
-    </div>
+    .nav-tab:active {
+      background-color: rgba(0,0,0,0.1);
+    }
+
+    .nav-tab.active {
+      color: var(--accent-color);
+    }
+
+    .nav-tab i {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    /* Screen containers */
+    .screen {
+      display: none;
+      height: calc(100vh - var(--nav-height));
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* Home screen */
+    .home-header {
+      height: var(--header-height);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      margin-left: 100px; /* Make space for baker avatar */
+    }
+
+    .money-counter {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .level-counter {
+      font-size: 16px;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Create baker modal */
+    .create-baker-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .create-baker-content {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+
+    /* Storage screen */
+    .storage-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .ingredient-cell {
+      aspect-ratio: 1;
+      background: white;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Market screen */
+    .market-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .market-item {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Stats screen */
+    .stats-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+    }
     
-    <div class="game-area">
-        <div class="kitchen-station" id="mixingStation">
-            <h3>Mixing Station</h3>
-            <!-- Mixing area for ingredients -->
-        </div>
-        
-        <div class="kitchen-station oven" id="ovenStation">
-            <h3>Oven</h3>
-            <div id="bakingProgress"></div>
-        </div>
-        
-        <div class="kitchen-station" id="finishedGoods">
-            <h3>Finished Goods</h3>
-            <!-- Completed items appear here -->
-        </div>
-    </div>
-</div>
+    .hire-button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
 
-<script>let gameState = {
+    .hire-button:hover {
+      background: #8B4513;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .hire-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Add styles for process stations */
+    .process-station {
+      background: var(--primary-color);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px 0;
+      min-height: 150px;
+    }
+
+    .processes {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 10px;
+    }
+
+    #mixingStation {
+      background: var(--secondary-color);
+    }
+
+    #ovenStation {
+      background: #8B4513;
+      color: white;
+    }
+
+    #finishedGoods {
+      background: var(--accent-color);
+    }
+    
+    #bakingProgress {
+      margin-top: 10px;
+    }
+
+    #bakingProgress button {
+      background: var(--accent-color);
+      border: none;
+      border-radius: 5px;
+      padding: 8px 16px;
+      color: white;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    #bakingProgress button:hover {
+      background: #8B4513;
+    }
+</style>
+<div class="nav-tabs">
+    <div class="nav-tab active" data-screen="homeScreen">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </div>
+    <div class="nav-tab" data-screen="storageScreen">
+      <i class="fas fa-box"></i>
+      <span>Storage</span>
+    </div>
+    <div class="nav-tab" data-screen="marketScreen">
+      <i class="fas fa-store"></i>
+      <span>Market</span>
+    </div>
+    <div class="nav-tab" data-screen="statsScreen">
+      <i class="fas fa-chart-bar"></i>
+      <span>Stats</span>
+    </div>
+  </div>
+
+  <div id="homeScreen" class="screen active">
+    <div class="baker-frame">
+      <img src="/DALL_E_2024-12-31_00.40.43_-_A_photorealistic_empty_circular_golden_frame_designed_for_a_bakery-themed_game._The_frame_should_be_ornate_and_elegant__with_subtle_flourishes_such_as-removebg-preview.png" alt="Golden Frame">
+      <div class="baker-avatar" id="bakerAvatar"></div>
+    </div>
+    <div class="home-header">
+      <div class="money-counter">&#x24;<span id="money">0</span></div>
+      <div class="level-counter">Level <span id="level">1</span></div>
+    </div>
+    <div class="processes">
+      <div class="process-station" id="mixingStation">
+        <h3>Mixing Station</h3>
+      </div>
+      <div class="process-station" id="ovenStation">
+        <h3>Oven</h3>
+        <div id="bakingProgress">
+          <!-- Baking progress and counter will be shown here -->
+        </div>
+      </div>
+      <div class="process-station" id="finishedGoods">
+        <h3>Finished Goods</h3>
+      </div>
+    </div>
+    <div class="workers-panel">
+      <div id="workersList"></div>
+      <button id="hireWorker" class="hire-button">Hire Worker (&#x24;100)</button>
+    </div>
+  </div>
+
+  <div id="storageScreen" class="screen">
+    <div class="storage-grid">
+      <!-- Ingredients will be populated here -->
+      <div class="ingredient" draggable="true" data-type="flour">&#x1f33e;</div>
+      <div class="ingredient" draggable="true" data-type="sugar">&#x1f9c2;</div>
+      <div class="ingredient" draggable="true" data-type="eggs">&#x1f95a;</div>
+      <div class="ingredient" draggable="true" data-type="butter">&#x1f9c8;</div>
+      <div class="ingredient" draggable="true" data-type="milk">&#x1f95b;</div>
+      <div class="ingredient" draggable="true" data-type="chocolate">&#x1f36b;</div>
+      <div class="ingredient" draggable="true" data-type="vanilla">&#x1f9c8;</div>
+      <div class="ingredient" draggable="true" data-type="yeast">&#x1f9eb;</div>
+    </div>
+    <div class="inventory">
+      <h3>Baker&apos;s Storage</h3>
+    </div>
+  </div>
+
+  <div id="marketScreen" class="screen">
+    <div class="market-list">
+      <div class="market-items">
+        <!-- Market items will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <div id="statsScreen" class="screen">
+    <div class="stats-list">
+      <div class="stats-panel">
+        <!-- Stats will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <div id="createBakerModal" class="create-baker-modal">
+    <div class="modal-content">
+      <h2>Create Your Baker</h2>
+      
+      <div class="baker-preview">
+        <svg id="bakerPreview" width="100%" height="100%" viewBox="0 0 200 300">
+          <g id="body">
+            <path id="torso" d="M80 100 h40 v100 h-40 z" fill="#ddd"/>
+            <circle id="head" cx="100" cy="70" r="30" fill="#ddd"/>
+            <path id="leftArm" d="M80 110 l-30 40" stroke="#ddd" stroke-width="20" stroke-linecap="round"/>
+            <path id="rightArm" d="M120 110 l30 40" stroke="#ddd" stroke-width="20" stroke-linecap="round"/>
+            <path id="leftLeg" d="M85 200 l-15 60" stroke="#ddd" stroke-width="20" stroke-linecap="round"/>
+            <path id="rightLeg" d="M115 200 l15 60" stroke="#ddd" stroke-width="20" stroke-linecap="round"/>
+          </g>
+          <g id="hair"/>
+          <g id="outfit"/>
+        </svg>
+      </div>
+      
+      <div class="customization-panel">
+        <h3>Skin Tone</h3>
+        <input type="range" id="skinTone" min="1" max="10" value="5">
+        
+        <h3>Hair Style</h3>
+        <div class="hair-options">
+          <button data-hair="short">Short</button>
+          <button data-hair="long">Long</button>
+          <button data-hair="curly">Curly</button>
+        </div>
+
+        <h3>Hair Color</h3> 
+        <input type="color" id="hairColor" value="#000000">
+
+        <h3>Outfit</h3>
+        <div class="outfit-options">
+          <button data-outfit="chef">Chef Uniform</button>
+          <button data-outfit="casual">Casual</button>
+          <button data-outfit="fancy">Fancy</button>
+        </div>
+      </div>
+
+      <button id="createBaker">Start Baking!</button>
+    </div>
+  </div>
+
+  <button id="resetProgress" class="reset-button">Reset Progress</button>
+  <script>function initMobileTabs() {
+  const tabs = document.querySelectorAll('.nav-tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', e => {
+      e.preventDefault();
+      const screenId = tab.dataset.screen;
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      const screen = document.getElementById(screenId);
+      if (screen) {
+        screen.classList.add('active');
+      }
+    });
+  });
+}
+let gameState = {
   money: 0,
   level: 1,
   exp: 0,
@@ -802,10 +1062,28 @@ function checkAndValidateBaker() {
   return false;
 }
 document.addEventListener('DOMContentLoaded', () => {
-  showCreateBakerModal();
+  initMobileTabs();
+  loadGame();
+  updateStats();
+  setupWorkerSystem();
+  setupMarket();
+  startPlaytimeCounter();
+  setupResetButton();
   setupCustomization();
-  setupDragAndDrop();
-  initializeGame();
+  const ovenStation = document.getElementById('ovenStation');
+  if (ovenStation && !ovenStation.hasEventListener) {
+    ovenStation.addEventListener('dragover', dragOver);
+    ovenStation.addEventListener('drop', dropInOven);
+    ovenStation.hasEventListener = true;
+  }
+  if (!checkAndValidateBaker()) {
+    showCreateBakerModal();
+  }
+  if (isMobile()) {
+    initializeMobileUI();
+    setupMobileIngredients();
+  }
+  setInterval(saveGame, 60000);
 });
 function setupCustomization() {
   const skinToneSlider = document.getElementById('skinTone');
@@ -813,6 +1091,10 @@ function setupCustomization() {
   const hairButtons = document.querySelectorAll('.hair-options button');
   const outfitButtons = document.querySelectorAll('.outfit-options button');
   const createButton = document.getElementById('createBaker');
+  if (!skinToneSlider || !hairColorPicker || !hairButtons.length || !outfitButtons.length || !createButton) {
+    console.warn('Missing customization elements');
+    return;
+  }
   skinToneSlider.addEventListener('input', e => {
     gameState.avatar.skinTone = e.target.value;
     updateAvatarPreview();
@@ -839,13 +1121,15 @@ function setupCustomization() {
   });
   createButton.addEventListener('click', () => {
     const finalAvatar = document.getElementById('bakerAvatar');
-    const previewSvg = document.getElementById('bakerPreview').cloneNode(true);
-    previewSvg.setAttribute('viewBox', '0 -30 200 360');
-    finalAvatar.innerHTML = '';
-    finalAvatar.appendChild(previewSvg);
-    document.getElementById('createBakerModal').style.display = 'none';
-    gameState.avatarCreated = true;
-    saveGame();
+    if (finalAvatar) {
+      const previewSvg = document.getElementById('bakerPreview').cloneNode(true);
+      previewSvg.setAttribute('viewBox', '0 -30 200 360');
+      finalAvatar.innerHTML = '';
+      finalAvatar.appendChild(previewSvg);
+      document.getElementById('createBakerModal').style.display = 'none';
+      gameState.avatarCreated = true;
+      saveGame();
+    }
   });
   updateAvatarPreview();
 }
@@ -866,59 +1150,58 @@ function updateAvatarPreview() {
       break;
     case 'long':
       hair.innerHTML = `
-                <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
-                <path d="M70 70 v40 C70 120, 130 120, 130 110 v-40" fill="${gameState.avatar.hairColor}"/>
-            `;
+                  <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
+                  <path d="M70 70 v40 C70 120, 130 120, 130 110 v-40" fill="${gameState.avatar.hairColor}"/>
+              `;
       break;
     case 'curly':
       hair.innerHTML = `
-                <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
-                <path d="M70 70 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0" 
-                      stroke="${gameState.avatar.hairColor}" fill="none" stroke-width="5"/>
-            `;
+                  <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
+                  <path d="M70 70 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0" 
+                        stroke="${gameState.avatar.hairColor}" fill="none" stroke-width="5"/>
+              `;
       break;
   }
   outfit.innerHTML = '';
   switch (gameState.avatar.outfit) {
     case 'chef':
       outfit.innerHTML = `
-                <rect x="80" y="100" width="40" height="100" fill="white"/>
-                <circle cx="85" cy="110" r="3" fill="black"/>
-                <circle cx="95" cy="110" r="3" fill="black"/>
-                <circle cx="105" cy="110" r="3" fill="black"/>
-                <circle cx="115" cy="110" r="3" fill="black"/>
-            `;
+                  <rect x="80" y="100" width="40" height="100" fill="white"/>
+                  <circle cx="85" cy="110" r="3" fill="black"/>
+                  <circle cx="95" cy="110" r="3" fill="black"/>
+                  <circle cx="105" cy="110" r="3" fill="black"/>
+                  <circle cx="115" cy="110" r="3" fill="black"/>
+              `;
       break;
     case 'casual':
       outfit.innerHTML = `
-                <rect x="80" y="100" width="40" height="60" fill="#4444ff"/>
-                <rect x="80" y="160" width="40" height="40" fill="#444444"/>
-            `;
+                  <rect x="80" y="100" width="40" height="60" fill="#4444ff"/>
+                  <rect x="80" y="160" width="40" height="40" fill="#444444"/>
+              `;
       break;
     case 'fancy':
       outfit.innerHTML = `
-                <path d="M80 100 h40 v100 h-40 z" fill="#222222"/>
-                <rect x="90" y="100" width="20" height="100" fill="white"/>
-                <path d="M80 120 h40" stroke="gold" stroke-width="2"/>
-            `;
+                  <path d="M80 100 h40 v100 h-40 z" fill="#222222"/>
+                  <rect x="90" y="100" width="20" height="100" fill="white"/>
+                  <path d="M80 120 h40" stroke="gold" stroke-width="2"/>
+              `;
       break;
   }
 }
 function showCreateBakerModal() {
   if (!checkAndValidateBaker()) {
     const modal = document.getElementById('createBakerModal');
-    modal.style.display = 'flex';
+    if (modal) {
+      modal.style.display = 'flex';
+      setupCustomization();
+    }
   }
 }
 function setupDragAndDrop() {
-  const ingredients = document.querySelectorAll('.ingredient');
   const mixingStation = document.getElementById('mixingStation');
-  ingredients.forEach(ingredient => {
-    ingredient.addEventListener('dragstart', dragStart);
-    ingredient.addEventListener('drag', drag);
-  });
-  mixingStation.addEventListener('dragover', dragOver);
-  mixingStation.addEventListener('drop', drop);
+  const ovenStation = document.getElementById('ovenStation');
+  ovenStation.addEventListener('dragover', dragOver);
+  ovenStation.addEventListener('drop', drop);
 }
 function dragStart(e) {
   e.dataTransfer.setData('text/plain', e.target.dataset.type);
@@ -984,39 +1267,47 @@ function dropInOven(e) {
   const ingredientType = e.dataTransfer.getData('text/plain');
   removeConnectingLine();
   if (ingredientType === 'dough') {
-    const dough = document.querySelector('.ingredient[data-type="dough"]');
+    const dough = document.querySelector('[data-type="dough"]');
     if (dough) {
-      const ingredients = dough.dataset.ingredients ? JSON.parse(dough.dataset.ingredients) : {
-        flour: 1,
-        sugar: 1,
-        eggs: 1
-      };
+      const ingredients = JSON.parse(dough.dataset.ingredients || '{"flour":1,"sugar":1,"eggs":1}');
       dough.remove();
       batchBaking.doughCount++;
       const progress = document.getElementById('bakingProgress');
       if (!batchBaking.inProgress) {
-        progress.innerHTML = `<p>Dough added: ${batchBaking.doughCount}</p>
-                            <button id="startBatchBaking">Start Baking!</button>`;
+        progress.innerHTML = `
+          <div style="margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.2); border-radius: 5px;">
+            <p style="margin: 0;">Dough added: ${batchBaking.doughCount}</p>
+            <button id="startBatchBaking" style="margin-top: 8px;">Start Baking!</button>
+          </div>
+        `;
         document.getElementById('startBatchBaking').addEventListener('click', () => {
           batchBaking.inProgress = true;
           startBaking(batchBaking.doughCount, ingredients);
           batchBaking.doughCount = 0;
         });
       } else {
-        progress.innerHTML = '<p>Baking in progress...</p>';
+        progress.innerHTML = '<p style="margin: 0;">Baking in progress...</p>';
       }
     }
   }
 }
 function startBaking(count = 1, ingredients) {
   const progress = document.getElementById('bakingProgress');
-  progress.innerHTML = '<p>Baking... (2:00)</p>';
+  progress.innerHTML = `
+    <div style="margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.2); border-radius: 5px;">
+      <p style="margin: 0;">Baking... (2:00)</p>
+    </div>
+  `;
   let timeLeft = 120;
   const timer = setInterval(() => {
     timeLeft--;
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    progress.innerHTML = `<p>Baking ${count} items... (${minutes}:${seconds.toString().padStart(2, '0')})</p>`;
+    progress.innerHTML = `
+      <div style="margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.2); border-radius: 5px;">
+        <p style="margin: 0;">Baking ${count} items... (${minutes}:${seconds.toString().padStart(2, '0')})</p>
+      </div>
+    `;
     if (timeLeft <= 0) {
       clearInterval(timer);
       batchBaking.inProgress = false;
@@ -1050,7 +1341,17 @@ function completeBaking(ingredients = {
   updateStats();
   saveGame();
 }
+function isMobile() {
+  return window.innerWidth <= 768;
+}
 function initializeGame() {
+  const statsPanel = document.querySelector('.stats-panel');
+  const statsList = document.querySelector('.stats-list');
+  if (statsList !== null && statsPanel === null) {
+    const newStatsPanel = document.createElement('div');
+    newStatsPanel.className = 'stats-panel';
+    statsList.appendChild(newStatsPanel);
+  }
   loadGame();
   updateStats();
   setupWorkerSystem();
@@ -1060,10 +1361,46 @@ function initializeGame() {
   if (!checkAndValidateBaker()) {
     showCreateBakerModal();
   }
+  if (isMobile()) {
+    initializeMobileUI();
+    setupMobileIngredients();
+  }
   setInterval(saveGame, 60000);
+}
+function setupWorkerSystem() {
+  const hireButton = document.getElementById('hireWorker');
+  if (!hireButton) {
+    console.warn('Hire worker button not found');
+    return;
+  }
+  hireButton.addEventListener('click', () => {
+    if (gameState.money >= 100) {
+      gameState.money -= 100;
+      hireNewWorker();
+      updateStats();
+      saveGame();
+    }
+  });
+  setInterval(() => {
+    if (hireButton) {
+      hireButton.disabled = gameState.money < 100;
+    }
+  }, 1000);
 }
 function setupMarket() {
   const marketItems = document.querySelector('.market-items');
+  if (!marketItems) {
+    const marketList = document.querySelector('.market-list');
+    if (marketList) {
+      const marketItemsDiv = document.createElement('div');
+      marketItemsDiv.className = 'market-items';
+      marketList.appendChild(marketItemsDiv);
+      setupMarket();
+      return;
+    }
+    console.warn('Market items container not found');
+    return;
+  }
   marketItems.innerHTML = '';
   for (const [itemId, item] of Object.entries(INGREDIENTS)) {
     if (gameState.level >= item.level) {
@@ -1072,34 +1409,37 @@ function setupMarket() {
       itemEl.dataset.item = itemId;
       itemEl.dataset.price = item.price;
       itemEl.innerHTML = `
-        <span>${item.name} ${item.emoji}</span>
-        <button class="buy-item">Buy $${item.price}</button>
-      `;
+          <span>${item.name} ${item.emoji}</span>
+          <button class="buy-item">Buy $${item.price}</button>
+        `;
       marketItems.appendChild(itemEl);
     } else {
       const itemEl = document.createElement('div');
       itemEl.className = 'market-item locked';
       itemEl.innerHTML = `
-        <span>${item.name} ${item.emoji} (Unlocks at Level ${item.level})</span>
-        <button class="buy-item" disabled>Buy $${item.price}</button>
-      `;
+          <span>${item.name} ${item.emoji} (Unlocks at Level ${item.level})</span>
+          <button class="buy-item" disabled>Buy $${item.price}</button>
+        `;
       marketItems.appendChild(itemEl);
     }
   }
-  document.querySelectorAll('.buy-item').forEach(button => {
-    button.addEventListener('click', e => {
-      const item = e.target.closest('.market-item');
-      const itemType = item.dataset.item;
-      const price = parseInt(item.dataset.price);
-      if (gameState.money >= price) {
-        gameState.money -= price;
-        gameState.inventory[itemType] = (gameState.inventory[itemType] || 0) + 1;
-        updateInventoryDisplay();
-        updateStats();
-        saveGame();
-      }
+  const buyButtons = document.querySelectorAll('.buy-item');
+  if (buyButtons) {
+    buyButtons.forEach(button => {
+      button.addEventListener('click', e => {
+        const item = e.target.closest('.market-item');
+        const itemType = item.dataset.item;
+        const price = parseInt(item.dataset.price);
+        if (gameState.money >= price) {
+          gameState.money -= price;
+          gameState.inventory[itemType] = (gameState.inventory[itemType] || 0) + 1;
+          updateInventoryDisplay();
+          updateStats();
+          saveGame();
+        }
+      });
     });
-  });
+  }
 }
 function startPlaytimeCounter() {
   setInterval(updatePlaytimeDisplay, 1000);
@@ -1109,29 +1449,51 @@ function updatePlaytimeDisplay() {
   const timeDiff = new Date(currentTime - new Date(gameState.startTime));
   const minutes = Math.floor(timeDiff / 1000 / 60);
   const seconds = Math.floor(timeDiff / 1000 % 60);
-  document.querySelector('.stats-panel').innerHTML = `
-    <h3>Baker Stats</h3>
-    <p>Level: <span id="level">${gameState.level}</span></p>
-    <p>Money: $<span id="money">${gameState.money.toFixed(2)}</span></p>
-    <p>Experience: <span id="exp">${gameState.exp}</span>/100</p>
-    <p>Playtime: ${minutes}m ${seconds}s</p>
-    <p>Dough Made: ${gameState.doughMade}</p>
-  `;
+  let statsPanel = document.querySelector('.stats-panel');
+  if (!statsPanel) {
+    const statsList = document.querySelector('.stats-list');
+    if (statsList) {
+      statsPanel = document.createElement('div');
+      statsPanel.className = 'stats-panel';
+      statsList.appendChild(statsPanel);
+    } else {
+      const statsScreen = document.getElementById('statsScreen');
+      if (statsScreen) {
+        const statsList = document.createElement('div');
+        statsList.className = 'stats-list';
+        statsScreen.appendChild(statsList);
+        statsPanel = document.createElement('div');
+        statsPanel.className = 'stats-panel';
+        statsList.appendChild(statsPanel);
+      }
+    }
+  }
+  if (statsPanel) {
+    statsPanel.innerHTML = `
+        <h3>Baker Stats</h3>
+        <p>Level: <span id="level">${gameState.level}</span></p>
+        <p>Money: $<span id="money">${gameState.money.toFixed(2)}</span></p>
+        <p>Experience: <span id="exp">${gameState.exp}</span>/100</p>
+        <p>Playtime: ${minutes}m ${seconds}s</p>
+        <p>Dough Made: ${gameState.doughMade}</p>
+      `;
+  }
 }
 function updateInventoryDisplay() {
   const inventory = document.querySelector('.inventory');
-  inventory.innerHTML = '<h3>Baker\'s Storage</h3>';
+  if (!inventory) return;
+  inventory.innerHTML = '<h3>Storage</h3>';
   Object.entries(gameState.inventory).forEach(([item, count]) => {
     if (count > 0) {
       const itemDiv = document.createElement('div');
       itemDiv.className = 'ingredient';
-      itemDiv.draggable = true;
       itemDiv.dataset.type = item;
       itemDiv.textContent = getItemEmoji(item);
+      itemDiv.draggable = false;
       inventory.appendChild(itemDiv);
     }
   });
-  setupDragAndDrop();
+  setupMobileIngredients();
 }
 function getItemEmoji(item) {
   const emojis = {
@@ -1163,20 +1525,6 @@ function getItemEmoji(item) {
 function updateStats() {
   updatePlaytimeDisplay();
   setupMarket();
-}
-function setupWorkerSystem() {
-  const hireButton = document.getElementById('hireWorker');
-  hireButton.addEventListener('click', () => {
-    if (gameState.money >= 100) {
-      gameState.money -= 100;
-      hireNewWorker();
-      updateStats();
-      saveGame();
-    }
-  });
-  setInterval(() => {
-    hireButton.disabled = gameState.money < 100;
-  }, 1000);
 }
 function hireNewWorker() {
   const worker = {
@@ -1230,95 +1578,103 @@ function loadGame() {
     batchBaking = data.batchBaking;
     if (gameState.avatarCreated) {
       const finalAvatar = document.getElementById('bakerAvatar');
-      const previewSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      previewSvg.setAttribute('viewBox', '0 -30 200 360');
-      previewSvg.innerHTML = `
-        <g id="body">
-          <path id="torso" d="M80 100 h40 v100 h-40 z" fill="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)"/>
-          <circle id="head" cx="100" cy="70" r="30" fill="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)"/>
-          <path id="leftArm" d="M80 110 l-30 40" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
-          <path id="rightArm" d="M120 110 l30 40" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
-          <path id="leftLeg" d="M85 200 l-15 60" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
-          <path id="rightLeg" d="M115 200 l15 60" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
-        </g>
-      `;
-      const hair = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      hair.id = "hair";
-      switch (gameState.avatar.hairStyle) {
-        case 'short':
-          hair.innerHTML = `<path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>`;
-          break;
-        case 'long':
-          hair.innerHTML = `
-            <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
-            <path d="M70 70 v40 C70 120, 130 120, 130 110 v-40" fill="${gameState.avatar.hairColor}"/>`;
-          break;
-        case 'curly':
-          hair.innerHTML = `
-            <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
-            <path d="M70 70 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0" 
-                  stroke="${gameState.avatar.hairColor}" fill="none" stroke-width="5"/>`;
-          break;
+      if (finalAvatar) {
+        const previewSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        previewSvg.setAttribute('viewBox', '0 -30 200 360');
+        previewSvg.innerHTML = `
+            <g id="body">
+              <path id="torso" d="M80 100 h40 v100 h-40 z" fill="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)"/>
+              <circle id="head" cx="100" cy="70" r="30" fill="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)"/>
+              <path id="leftArm" d="M80 110 l-30 40" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
+              <path id="rightArm" d="M120 110 l30 40" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
+              <path id="leftLeg" d="M85 200 l-15 60" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
+              <path id="rightLeg" d="M115 200 l15 60" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
+            </g>
+          `;
+        const hair = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        hair.id = "hair";
+        switch (gameState.avatar.hairStyle) {
+          case 'short':
+            hair.innerHTML = `<path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>`;
+            break;
+          case 'long':
+            hair.innerHTML = `
+                <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
+                <path d="M70 70 v40 C70 120, 130 120, 130 110 v-40" fill="${gameState.avatar.hairColor}"/>`;
+            break;
+          case 'curly':
+            hair.innerHTML = `
+                <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
+                <path d="M70 70 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0" 
+                      stroke="${gameState.avatar.hairColor}" fill="none" stroke-width="5"/>`;
+            break;
+        }
+        previewSvg.appendChild(hair);
+        const outfit = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        outfit.id = "outfit";
+        switch (gameState.avatar.outfit) {
+          case 'chef':
+            outfit.innerHTML = `
+                <rect x="80" y="100" width="40" height="100" fill="white"/>
+                <circle cx="85" cy="110" r="3" fill="black"/>
+                <circle cx="95" cy="110" r="3" fill="black"/>
+                <circle cx="105" cy="110" r="3" fill="black"/>
+                <circle cx="115" cy="110" r="3" fill="black"/>`;
+            break;
+          case 'casual':
+            outfit.innerHTML = `
+                <rect x="80" y="100" width="40" height="60" fill="#4444ff"/>
+                <rect x="80" y="160" width="40" height="40" fill="#444444"/>`;
+            break;
+          case 'fancy':
+            outfit.innerHTML = `
+                <path d="M80 100 h40 v100 h-40 z" fill="#222222"/>
+                <rect x="90" y="100" width="20" height="100" fill="white"/>
+                <path d="M80 120 h40" stroke="gold" stroke-width="2"/>`;
+            break;
+        }
+        previewSvg.appendChild(outfit);
+        finalAvatar.innerHTML = '';
+        finalAvatar.appendChild(previewSvg);
+        finalAvatar.closest('.baker-frame').style.position = 'absolute';
+        finalAvatar.closest('.baker-frame').style.top = '10px';
+        finalAvatar.closest('.baker-frame').style.left = '10px';
+        finalAvatar.closest('.baker-frame').style.zIndex = '10';
       }
-      previewSvg.appendChild(hair);
-      const outfit = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      outfit.id = "outfit";
-      switch (gameState.avatar.outfit) {
-        case 'chef':
-          outfit.innerHTML = `
-            <rect x="80" y="100" width="40" height="100" fill="white"/>
-            <circle cx="85" cy="110" r="3" fill="black"/>
-            <circle cx="95" cy="110" r="3" fill="black"/>
-            <circle cx="105" cy="110" r="3" fill="black"/>
-            <circle cx="115" cy="110" r="3" fill="black"/>`;
-          break;
-        case 'casual':
-          outfit.innerHTML = `
-            <rect x="80" y="100" width="40" height="60" fill="#4444ff"/>
-            <rect x="80" y="160" width="40" height="40" fill="#444444"/>`;
-          break;
-        case 'fancy':
-          outfit.innerHTML = `
-            <path d="M80 100 h40 v100 h-40 z" fill="#222222"/>
-            <rect x="90" y="100" width="20" height="100" fill="white"/>
-            <path d="M80 120 h40" stroke="gold" stroke-width="2"/>`;
-          break;
-      }
-      previewSvg.appendChild(outfit);
-      finalAvatar.innerHTML = '';
-      finalAvatar.appendChild(previewSvg);
     }
     updateStats();
     updateInventoryDisplay();
     const workersList = document.getElementById('workersList');
-    workersList.innerHTML = '';
-    gameState.workers.forEach(worker => {
-      const workerCard = document.createElement('div');
-      workerCard.classList.add('worker-card');
-      workerCard.textContent = `Worker #${worker.id} - Productivity: ${worker.productivity}%`;
-      workersList.appendChild(workerCard);
-      setInterval(() => {
-        const now = new Date();
-        if (now - new Date(worker.lastWorked) >= 5000) {
-          if (gameState.inventory.flour >= 1 && gameState.inventory.water >= 1) {
-            gameState.inventory.flour--;
-            gameState.inventory.water--;
-            batchBaking.doughCount++;
-            worker.lastWorked = now;
-            if (!batchBaking.inProgress) {
-              batchBaking.inProgress = true;
-              startBaking(batchBaking.doughCount, {
-                flour: 1,
-                water: 1
-              });
-              batchBaking.doughCount = 0;
+    if (workersList) {
+      workersList.innerHTML = '';
+      gameState.workers.forEach(worker => {
+        const workerCard = document.createElement('div');
+        workerCard.classList.add('worker-card');
+        workerCard.textContent = `Worker #${worker.id} - Productivity: ${worker.productivity}%`;
+        workersList.appendChild(workerCard);
+        setInterval(() => {
+          const now = new Date();
+          if (now - worker.lastWorked >= 5000) {
+            if (gameState.inventory.flour >= 1 && gameState.inventory.water >= 1) {
+              gameState.inventory.flour--;
+              gameState.inventory.water--;
+              batchBaking.doughCount++;
+              worker.lastWorked = now;
+              if (!batchBaking.inProgress) {
+                batchBaking.inProgress = true;
+                startBaking(batchBaking.doughCount, {
+                  flour: 1,
+                  water: 1
+                });
+                batchBaking.doughCount = 0;
+              }
+              updateInventoryDisplay();
+              updateStats();
             }
-            updateInventoryDisplay();
-            updateStats();
           }
-        }
-      }, 1000);
-    });
+        }, 1000);
+      });
+    }
   }
 }
 function setupResetButton() {
@@ -1378,5 +1734,69 @@ function setupResetButton() {
       alert('Progress has been reset!');
     }
   });
+}
+function initializeMobileUI() {
+  const tabs = document.querySelectorAll('.nav-tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const screenId = tab.dataset.screen;
+      showScreen(screenId);
+    });
+  });
+}
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.getElementById(screenId).classList.add('active');
+  document.querySelector(`.nav-tab[data-screen="${screenId}"]`).classList.add('active');
+}
+function setupMobileIngredients() {
+  const ingredients = document.querySelectorAll('.ingredient');
+  ingredients.forEach(ingredient => {
+    ingredient.addEventListener('click', () => {
+      const type = ingredient.dataset.type;
+      if (gameState.inventory[type] > 0) {
+        gameState.inventory[type]--;
+        createDough();
+        updateInventoryDisplay();
+      }
+    });
+  });
+}
+function canUseMobileIngredient(type) {
+  return gameState.inventory[type] > 0;
+}
+function useIngredientMobile(type) {
+  gameState.inventory[type]--;
+  createDoughMobile();
+  updateInventoryDisplay();
+}
+function createDoughMobile() {
+  gameState.doughMade++;
+  const dough = document.createElement('div');
+  dough.classList.add('ingredient');
+  dough.textContent = '🥟';
+  dough.draggable = true;
+  dough.dataset.type = 'dough';
+  dough.dataset.ingredients = JSON.stringify({
+    flour: 1,
+    sugar: 1,
+    eggs: 1
+  });
+  dough.addEventListener('dragstart', dragStart);
+  dough.addEventListener('drag', drag);
+}
+function startBakingMobile(dough) {
+  dough.remove();
+  const ingredients = {
+    flour: 1,
+    water: 1
+  };
+  startBaking(1, ingredients);
 }</script>
-</body></html>
+</body>
+</html>
