@@ -380,6 +380,25 @@ input[type="color"] {
     transform: none;
     box-shadow: none;
 }
+
+.reset-button {
+    width: 100%;
+    padding: 10px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.reset-button:hover {
+    background: #cc0000;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
 </style>
 </head>
 <body>
@@ -430,6 +449,8 @@ input[type="color"] {
 
 <div class="game-container">
     <div class="sidebar">
+        <button id="resetProgress" class="reset-button">Reset Progress</button>
+        
         <div class="baker-frame">
             <img src="DALL_E_2024-12-31_00.40.43_-_A_photorealistic_empty_circular_golden_frame_designed_for_a_bakery-themed_game._The_frame_should_be_ornate_and_elegant__with_subtle_flourishes_such_as-removebg-preview.png" alt="Baker Frame">
             <div class="baker-avatar" id="bakerAvatar">
@@ -802,6 +823,61 @@ const INGREDIENT_VALUES = {
   blueberry: 5,
   raspberry: 5
 };
+function setupResetButton() {
+  const resetBtn = document.getElementById('resetProgress');
+  resetBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset all progress? This cannot be undone!')) {
+      gameState = {
+        money: 0,
+        level: 1,
+        exp: 0,
+        workers: [],
+        inventory: {
+          flour: 5,
+          sugar: 5,
+          eggs: 5,
+          butter: 3,
+          milk: 3,
+          chocolate: 3,
+          vanilla: 3,
+          yeast: 3,
+          water: 0,
+          salt: 0,
+          nuts: 0,
+          cinnamon: 0,
+          berries: 0,
+          honey: 0,
+          cheese: 0,
+          coconut: 0,
+          carrots: 0,
+          strawberry: 0,
+          banana: 0,
+          blueberry: 0,
+          raspberry: 0
+        },
+        startTime: new Date(),
+        doughMade: 0,
+        waterCount: 0,
+        avatar: {
+          skinTone: 5,
+          hairStyle: 'short',
+          hairColor: '#000000',
+          outfit: 'chef'
+        }
+      };
+      batchBaking = {
+        doughCount: 0,
+        inProgress: false
+      };
+      localStorage.removeItem('bakerySaveData');
+      document.getElementById('workersList').innerHTML = '';
+      updateStats();
+      updateInventoryDisplay();
+      setupMarket();
+      alert('Progress has been reset!');
+    }
+  });
+}
 document.addEventListener('DOMContentLoaded', () => {
   showCreateBakerModal();
   setupCustomization();
@@ -1053,6 +1129,7 @@ function initializeGame() {
   setupWorkerSystem();
   setupMarket();
   startPlaytimeCounter();
+  setupResetButton();
   setInterval(saveGame, 60000);
 }
 function setupMarket() {
