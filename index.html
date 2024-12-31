@@ -62,8 +62,7 @@ body {
 .baker-avatar svg {
     width: 100%;
     height: 100%;
-    /* Adjust viewBox to show full avatar */
-    transform: translateY(-10px) scale(0.9);
+    transform: translateY(-5px) scale(0.8); /* Adjust position slightly up and scale down */
 }
 
 .game-area {
@@ -259,13 +258,29 @@ body {
 }
 
 .market-item {
-    padding: 5px;
-    margin: 5px 0;
+    padding: 8px;
+    margin: 8px 0;
     border: 1px solid var(--accent-color);
-    border-radius: 5px;
+    border-radius: 8px;
+    background: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: all 0.2s;
+}
+
+.market-item:hover {
+    background: var(--secondary-color);
+}
+
+.market-item.locked {
+    opacity: 0.5;
+    background: #eee;
+    cursor: not-allowed;
+}
+
+.market-item.locked button {
+    pointer-events: none;
 }
 
 .humanoid-avatar {
@@ -490,7 +505,10 @@ input[type="color"] {
   inventory: {
     flour: 5,
     sugar: 5,
-    eggs: 5
+    eggs: 5,
+    water: 0,
+    butter: 0,
+    milk: 0
   },
   startTime: new Date(),
   doughMade: 0,
@@ -506,10 +524,96 @@ let batchBaking = {
   doughCount: 0,
   inProgress: false
 };
+const RECIPES = {
+  basicBread: {
+    name: "Basic Bread",
+    level: 1,
+    ingredients: {
+      flour: 2,
+      water: 1
+    },
+    emoji: "🍞"
+  },
+  fancyBread: {
+    name: "Fancy Bread",
+    level: 2,
+    ingredients: {
+      flour: 3,
+      sugar: 1,
+      eggs: 1,
+      water: 1
+    },
+    emoji: "🥖"
+  },
+  cookies: {
+    name: "Cookies",
+    level: 3,
+    ingredients: {
+      flour: 2,
+      sugar: 2,
+      eggs: 1,
+      butter: 1
+    },
+    emoji: "🍪"
+  },
+  cake: {
+    name: "Cake",
+    level: 4,
+    ingredients: {
+      flour: 3,
+      sugar: 3,
+      eggs: 2,
+      butter: 2,
+      milk: 1
+    },
+    emoji: "🎂"
+  }
+};
+const INGREDIENTS = {
+  flour: {
+    name: "Flour",
+    price: 10,
+    emoji: "🌾",
+    level: 1
+  },
+  sugar: {
+    name: "Sugar",
+    price: 15,
+    emoji: "🧂",
+    level: 1
+  },
+  eggs: {
+    name: "Eggs",
+    price: 20,
+    emoji: "🥚",
+    level: 1
+  },
+  water: {
+    name: "Water",
+    price: 5,
+    emoji: "💧",
+    level: 1
+  },
+  butter: {
+    name: "Butter",
+    price: 25,
+    emoji: "🧈",
+    level: 2
+  },
+  milk: {
+    name: "Milk",
+    price: 30,
+    emoji: "🥛",
+    level: 3
+  }
+};
 const INGREDIENT_VALUES = {
   flour: 1,
   sugar: 2,
-  eggs: 0.1
+  eggs: 0.1,
+  water: 0,
+  butter: 0,
+  milk: 0
 };
 document.addEventListener('DOMContentLoaded', () => {
   showCreateBakerModal();
@@ -767,6 +871,28 @@ function initializeGame() {
 function setupMarket() {
   const marketButton = document.querySelector('.market-button');
   const marketItems = document.querySelector('.market-items');
+  marketItems.innerHTML = '';
+  for (const [itemId, item] of Object.entries(INGREDIENTS)) {
+    if (gameState.level >= item.level) {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'market-item';
+      itemEl.dataset.item = itemId;
+      itemEl.dataset.price = item.price;
+      itemEl.innerHTML = `
+        <span>${item.name} ${item.emoji}</span>
+        <button class="buy-item">Buy $${item.price}</button>
+      `;
+      marketItems.appendChild(itemEl);
+    } else {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'market-item locked';
+      itemEl.innerHTML = `
+        <span>${item.name} ${item.emoji} (Unlocks at Level ${item.level})</span>
+        <button class="buy-item">Buy $${item.price}</button>
+      `;
+      marketItems.appendChild(itemEl);
+    }
+  }
   marketButton.addEventListener('click', () => {
     marketItems.classList.toggle('show');
   });
@@ -827,6 +953,7 @@ function getItemEmoji(item) {
 }
 function updateStats() {
   updatePlaytimeDisplay();
+  setupMarket();
 }
 function setupWorkerSystem() {
   const hireButton = document.getElementById('hireWorker');
