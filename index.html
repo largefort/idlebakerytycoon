@@ -562,7 +562,8 @@ input[type="color"] {
     hairStyle: 'short',
     hairColor: '#000000',
     outfit: 'chef'
-  }
+  },
+  avatarCreated: false
 };
 let batchBaking = {
   doughCount: 0,
@@ -921,6 +922,8 @@ function setupCustomization() {
     finalAvatar.innerHTML = '';
     finalAvatar.appendChild(previewSvg);
     document.getElementById('createBakerModal').style.display = 'none';
+    gameState.avatarCreated = true;
+    saveGame();
   });
   updateAvatarPreview();
 }
@@ -980,8 +983,10 @@ function updateAvatarPreview() {
   }
 }
 function showCreateBakerModal() {
-  const modal = document.getElementById('createBakerModal');
-  modal.style.display = 'flex';
+  if (!gameState.avatarCreated) {
+    const modal = document.getElementById('createBakerModal');
+    modal.style.display = 'flex';
+  }
 }
 function setupDragAndDrop() {
   const ingredients = document.querySelectorAll('.ingredient');
@@ -1130,6 +1135,9 @@ function initializeGame() {
   setupMarket();
   startPlaytimeCounter();
   setupResetButton();
+  if (!gameState.avatarCreated) {
+    showCreateBakerModal();
+  }
   setInterval(saveGame, 60000);
 }
 function setupMarket() {
@@ -1301,6 +1309,66 @@ function loadGame() {
       startTime: new Date(data.gameState.startTime)
     };
     batchBaking = data.batchBaking;
+    if (gameState.avatarCreated) {
+      const finalAvatar = document.getElementById('bakerAvatar');
+      const previewSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      previewSvg.setAttribute('viewBox', '0 -30 200 360');
+      previewSvg.innerHTML = `
+        <g id="body">
+          <path id="torso" d="M80 100 h40 v100 h-40 z" fill="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)"/>
+          <circle id="head" cx="100" cy="70" r="30" fill="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)"/>
+          <path id="leftArm" d="M80 110 l-30 40" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
+          <path id="rightArm" d="M120 110 l30 40" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
+          <path id="leftLeg" d="M85 200 l-15 60" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
+          <path id="rightLeg" d="M115 200 l15 60" stroke="hsl(30, 50%, ${90 - gameState.avatar.skinTone * 5}%)" stroke-width="20" stroke-linecap="round"/>
+        </g>
+      `;
+      const hair = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      hair.id = "hair";
+      switch (gameState.avatar.hairStyle) {
+        case 'short':
+          hair.innerHTML = `<path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>`;
+          break;
+        case 'long':
+          hair.innerHTML = `
+            <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
+            <path d="M70 70 v40 C70 120, 130 120, 130 110 v-40" fill="${gameState.avatar.hairColor}"/>`;
+          break;
+        case 'curly':
+          hair.innerHTML = `
+            <path d="M70 70 C70 40, 130 40, 130 70" fill="${gameState.avatar.hairColor}"/>
+            <path d="M70 70 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0 q5 10 10 0" 
+                  stroke="${gameState.avatar.hairColor}" fill="none" stroke-width="5"/>`;
+          break;
+      }
+      previewSvg.appendChild(hair);
+      const outfit = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      outfit.id = "outfit";
+      switch (gameState.avatar.outfit) {
+        case 'chef':
+          outfit.innerHTML = `
+            <rect x="80" y="100" width="40" height="100" fill="white"/>
+            <circle cx="85" cy="110" r="3" fill="black"/>
+            <circle cx="95" cy="110" r="3" fill="black"/>
+            <circle cx="105" cy="110" r="3" fill="black"/>
+            <circle cx="115" cy="110" r="3" fill="black"/>`;
+          break;
+        case 'casual':
+          outfit.innerHTML = `
+            <rect x="80" y="100" width="40" height="60" fill="#4444ff"/>
+            <rect x="80" y="160" width="40" height="40" fill="#444444"/>`;
+          break;
+        case 'fancy':
+          outfit.innerHTML = `
+            <path d="M80 100 h40 v100 h-40 z" fill="#222222"/>
+            <rect x="90" y="100" width="20" height="100" fill="white"/>
+            <path d="M80 120 h40" stroke="gold" stroke-width="2"/>`;
+          break;
+      }
+      previewSvg.appendChild(outfit);
+      finalAvatar.innerHTML = '';
+      finalAvatar.appendChild(previewSvg);
+    }
     updateStats();
     updateInventoryDisplay();
     const workersList = document.getElementById('workersList');
