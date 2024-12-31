@@ -1,4 +1,4 @@
-<html><head><base href=".">
+<html><head><base href ".";
 <script src="https://cdnjs.cloudflare.com/ajax/libs/draggable/1.0.0-beta.12/draggable.bundle.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <style>
@@ -234,6 +234,7 @@ body {
 
 .market-dropdown {
     margin-top: 20px;
+    position: relative; /* Container for dropdown */
 }
 
 .market-button {
@@ -254,10 +255,13 @@ body {
     margin-top: 5px;
     max-height: 300px;
     overflow-y: auto;
+    position: absolute; /* Add positioning */
+    width: 90%;
+    z-index: 100;
 }
 
 .market-items.show {
-    display: block;
+    display: block !important; /* Force display when shown */
 }
 
 .market-item {
@@ -526,7 +530,8 @@ input[type="color"] {
     </div>
 </div>
 
-<script>let gameState = {
+<script>
+let gameState = {
   money: 0,
   level: 1,
   exp: 0,
@@ -824,67 +829,23 @@ const INGREDIENT_VALUES = {
   blueberry: 5,
   raspberry: 5
 };
-function setupResetButton() {
-  const resetBtn = document.getElementById('resetProgress');
-  resetBtn.addEventListener('click', () => {
-    if (confirm('Are you sure you want to reset all progress? This cannot be undone!')) {
-      gameState = {
-        money: 0,
-        level: 1,
-        exp: 0,
-        workers: [],
-        inventory: {
-          flour: 5,
-          sugar: 5,
-          eggs: 5,
-          butter: 3,
-          milk: 3,
-          chocolate: 3,
-          vanilla: 3,
-          yeast: 3,
-          water: 0,
-          salt: 0,
-          nuts: 0,
-          cinnamon: 0,
-          berries: 0,
-          honey: 0,
-          cheese: 0,
-          coconut: 0,
-          carrots: 0,
-          strawberry: 0,
-          banana: 0,
-          blueberry: 0,
-          raspberry: 0
-        },
-        startTime: new Date(),
-        doughMade: 0,
-        waterCount: 0,
-        avatar: {
-          skinTone: 5,
-          hairStyle: 'short',
-          hairColor: '#000000',
-          outfit: 'chef'
-        }
-      };
-      batchBaking = {
-        doughCount: 0,
-        inProgress: false
-      };
-      localStorage.removeItem('bakerySaveData');
-      document.getElementById('workersList').innerHTML = '';
-      updateStats();
-      updateInventoryDisplay();
-      setupMarket();
-      alert('Progress has been reset!');
-    }
-  });
+
+function checkAndValidateBaker() {
+  const savedData = localStorage.getItem('bakerySaveData');
+  if (savedData) {
+    const data = JSON.parse(savedData);
+    return data.gameState.avatarCreated;
+  }
+  return false;
 }
+
 document.addEventListener('DOMContentLoaded', () => {
   showCreateBakerModal();
   setupCustomization();
   setupDragAndDrop();
   initializeGame();
 });
+
 function setupCustomization() {
   const skinToneSlider = document.getElementById('skinTone');
   const hairColorPicker = document.getElementById('hairColor');
@@ -923,10 +884,11 @@ function setupCustomization() {
     finalAvatar.appendChild(previewSvg);
     document.getElementById('createBakerModal').style.display = 'none';
     gameState.avatarCreated = true;
-    saveGame();
+    saveGame(); // Save immediately after creation
   });
   updateAvatarPreview();
 }
+
 function updateAvatarPreview() {
   const svg = document.getElementById('bakerPreview');
   const body = svg.getElementById('body');
@@ -982,12 +944,14 @@ function updateAvatarPreview() {
       break;
   }
 }
+
 function showCreateBakerModal() {
-  if (!gameState.avatarCreated) {
+  if (!checkAndValidateBaker()) {
     const modal = document.getElementById('createBakerModal');
     modal.style.display = 'flex';
   }
 }
+
 function setupDragAndDrop() {
   const ingredients = document.querySelectorAll('.ingredient');
   const mixingStation = document.getElementById('mixingStation');
@@ -998,16 +962,20 @@ function setupDragAndDrop() {
   mixingStation.addEventListener('dragover', dragOver);
   mixingStation.addEventListener('drop', drop);
 }
+
 function dragStart(e) {
   e.dataTransfer.setData('text/plain', e.target.dataset.type);
   drawConnectingLine(e.target, e);
 }
+
 function drag(e) {
   updateConnectingLine(e);
 }
+
 function dragOver(e) {
   e.preventDefault();
 }
+
 function drop(e) {
   e.preventDefault();
   const ingredientType = e.dataTransfer.getData('text/plain');
@@ -1017,11 +985,13 @@ function drop(e) {
     createDough();
   }
 }
+
 function drawConnectingLine(element, event) {
   const line = document.createElement('div');
   line.classList.add('connecting-line');
   document.body.appendChild(line);
 }
+
 function updateConnectingLine(event) {
   const line = document.querySelector('.connecting-line');
   if (line) {
@@ -1031,10 +1001,12 @@ function updateConnectingLine(event) {
     line.style.top = `${y2}px`;
   }
 }
+
 function removeConnectingLine() {
   const line = document.querySelector('.connecting-line');
   if (line) line.remove();
 }
+
 function createDough() {
   gameState.doughMade++;
   const dough = document.createElement('div');
@@ -1057,6 +1029,7 @@ function createDough() {
     ovenStation.hasEventListener = true;
   }
 }
+
 function dropInOven(e) {
   e.preventDefault();
   const ingredientType = e.dataTransfer.getData('text/plain');
@@ -1086,6 +1059,7 @@ function dropInOven(e) {
     }
   }
 }
+
 function startBaking(count = 1, ingredients) {
   const progress = document.getElementById('bakingProgress');
   progress.innerHTML = '<p>Baking... (2:00)</p>';
@@ -1105,6 +1079,7 @@ function startBaking(count = 1, ingredients) {
     }
   }, 1000);
 }
+
 function completeBaking(ingredients = {
   flour: 1,
   sugar: 1,
@@ -1128,6 +1103,7 @@ function completeBaking(ingredients = {
   updateStats();
   saveGame();
 }
+
 function initializeGame() {
   loadGame();
   updateStats();
@@ -1135,17 +1111,23 @@ function initializeGame() {
   setupMarket();
   startPlaytimeCounter();
   setupResetButton();
-  if (!gameState.avatarCreated) {
+  
+  // Only show create baker modal for new players
+  if (!checkAndValidateBaker()) {
     showCreateBakerModal();
   }
+  
   setInterval(saveGame, 60000);
 }
+
 function setupMarket() {
   const marketButton = document.querySelector('.market-button');
   const marketItems = document.querySelector('.market-items');
-  marketButton.addEventListener('click', () => {
+  marketButton.removeEventListener('click', toggleMarket);
+  function toggleMarket() {
     marketItems.classList.toggle('show');
-  });
+  }
+  marketButton.addEventListener('click', toggleMarket);
   marketItems.innerHTML = '';
   for (const [itemId, item] of Object.entries(INGREDIENTS)) {
     if (gameState.level >= item.level) {
@@ -1183,9 +1165,11 @@ function setupMarket() {
     });
   });
 }
+
 function startPlaytimeCounter() {
   setInterval(updatePlaytimeDisplay, 1000);
 }
+
 function updatePlaytimeDisplay() {
   const currentTime = new Date();
   const timeDiff = new Date(currentTime - new Date(gameState.startTime));
@@ -1200,6 +1184,7 @@ function updatePlaytimeDisplay() {
     <p>Dough Made: ${gameState.doughMade}</p>
   `;
 }
+
 function updateInventoryDisplay() {
   const inventory = document.querySelector('.inventory');
   inventory.innerHTML = '<h3>Baker\'s Storage</h3>';
@@ -1215,6 +1200,7 @@ function updateInventoryDisplay() {
   });
   setupDragAndDrop();
 }
+
 function getItemEmoji(item) {
   const emojis = {
     flour: '🌾',
@@ -1242,10 +1228,12 @@ function getItemEmoji(item) {
   };
   return emojis[item];
 }
+
 function updateStats() {
   updatePlaytimeDisplay();
   setupMarket();
 }
+
 function setupWorkerSystem() {
   const hireButton = document.getElementById('hireWorker');
   hireButton.addEventListener('click', () => {
@@ -1260,6 +1248,7 @@ function setupWorkerSystem() {
     hireButton.disabled = gameState.money < 100;
   }, 1000);
 }
+
 function hireNewWorker() {
   const worker = {
     id: gameState.workers.length + 1,
@@ -1293,6 +1282,7 @@ function hireNewWorker() {
     }
   }, 1000);
 }
+
 function saveGame() {
   const saveData = {
     gameState: gameState,
@@ -1300,13 +1290,15 @@ function saveGame() {
   };
   localStorage.setItem('bakerySaveData', JSON.stringify(saveData));
 }
+
 function loadGame() {
   const savedData = localStorage.getItem('bakerySaveData');
   if (savedData) {
     const data = JSON.parse(savedData);
     gameState = {
       ...data.gameState,
-      startTime: new Date(data.gameState.startTime)
+      startTime: new Date(data.gameState.startTime),
+      avatarCreated: data.gameState.avatarCreated || false
     };
     batchBaking = data.batchBaking;
     if (gameState.avatarCreated) {
@@ -1401,5 +1393,63 @@ function loadGame() {
       }, 1000);
     });
   }
-}</script>
+}
+
+function setupResetButton() {
+  const resetBtn = document.getElementById('resetProgress');
+  resetBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset all progress? This cannot be undone!')) {
+      gameState = {
+        money: 0,
+        level: 1,
+        exp: 0,
+        workers: [],
+        inventory: {
+          flour: 5,
+          sugar: 5,
+          eggs: 5,
+          butter: 3,
+          milk: 3,
+          chocolate: 3,
+          vanilla: 3,
+          yeast: 3,
+          water: 0,
+          salt: 0,
+          nuts: 0,
+          cinnamon: 0,
+          berries: 0,
+          honey: 0,
+          cheese: 0,
+          coconut: 0,
+          carrots: 0,
+          strawberry: 0,
+          banana: 0,
+          blueberry: 0,
+          raspberry: 0
+        },
+        startTime: new Date(),
+        doughMade: 0,
+        waterCount: 0,
+        avatar: {
+          skinTone: 5,
+          hairStyle: 'short',
+          hairColor: '#000000',
+          outfit: 'chef'
+        },
+        avatarCreated: false
+      };
+      batchBaking = {
+        doughCount: 0,
+        inProgress: false
+      };
+      localStorage.removeItem('bakerySaveData');
+      document.getElementById('workersList').innerHTML = '';
+      updateStats();
+      updateInventoryDisplay();
+      setupMarket();
+      alert('Progress has been reset!');
+    }
+  });
+}
+</script>
 </body></html>
